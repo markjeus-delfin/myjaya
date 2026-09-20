@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Love</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --void:      #06070d;
+  --navy:      #0a0d17;
+  --navy-2:    #111827;
+  --burgundy:  #1f0b12;
+  --burgundy-2:#2b1019;
+  --rose:      #b76e82;
+  --rose-soft: #e3bcc6;
+  --gold:      #b98a74;
+  --ink:       #efe3e6;
+  --ink-dim:   #c4aab0;
+  --ink-faint: #7f6970;
+  --line:      rgba(239,227,230,0.12);
+
+  --serif: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*,*::before,*::after{ box-sizing: inherit; }
+
+html{
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+  background: var(--void);
+}
+
+html,body{
+  height:100%;
+  margin:0;
+  overflow-x:hidden;
+  background: var(--void);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection{ background: var(--burgundy-2); color: var(--rose-soft); }
+
+/* Visible keyboard focus, everywhere */
+a:focus-visible, button:focus-visible, input:focus-visible{
+  outline: 1px solid var(--rose-soft);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* ============================================================
+   STAGE / BACKGROUND LAYERS
+   ============================================================ */
+.stage{
+  position: relative;
+  min-height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(71,31,39,0.9) 0%, transparent 58%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(17,24,39,0.85) 0%, transparent 62%),
+    linear-gradient(180deg, #07090f 0%, #0b0f18 42%, #05070d 100%);
+}
+
+/* film grain */
+.grain{
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* vignette */
+.vignette{
+  position: fixed; inset:0;
+  pointer-events:none;
+  z-index: 49;
+  background: radial-gradient(ellipse 90% 90% at 50% 45%, transparent 45%, rgba(0,0,0,0.55) 100%);
+}
+
+/* rain */
+.rain{ position: fixed; inset:0; pointer-events:none; z-index: 2; overflow:hidden; }
+.drop{
+  position:absolute; top:-10%;
+  width:1px; height: 60px;
+  background: linear-gradient(180deg, transparent, rgba(216,200,205,0.35), transparent);
+  animation: fall linear infinite;
+}
+@keyframes fall{
+  to{ transform: translateY(120vh); }
+}
+
+/* dust particles */
+.dust{ position: fixed; inset:0; pointer-events:none; z-index:3; }
+.mote{
+  position:absolute;
+  width: 2px; height:2px;
+  border-radius:50%;
+  background: var(--rose-soft);
+  opacity: 0.35;
+  animation: drift ease-in-out infinite;
+}
+@keyframes drift{
+  0%,100%{ transform: translateY(0) translateX(0); opacity: 0.15; }
+  50%{ transform: translateY(-30px) translateX(10px); opacity: 0.5; }
+}
+
+/* petals */
+.petals{ position: fixed; inset:0; pointer-events:none; z-index:4; }
+.petal{
+  position:absolute; top:-5%;
+  font-size: 14px;
+  color: var(--rose);
+  opacity:0.5;
+  animation: petal-fall linear infinite;
+  filter: drop-shadow(0 0 3px rgba(217,143,160,0.4));
+}
+@keyframes petal-fall{
+  0%{ transform: translateY(0) translateX(0) rotate(0deg); }
+  100%{ transform: translateY(115vh) translateX(40px) rotate(300deg); }
+}
+
+/* stars */
+.stars{ position: fixed; inset:0; pointer-events:none; z-index:1; }
+.star{
+  position:absolute;
+  width:2px; height:2px;
+  background: var(--gold);
+  border-radius:50%;
+  animation: twinkle ease-in-out infinite;
+}
+@keyframes twinkle{
+  0%,100%{ opacity:0.15; }
+  50%{ opacity:0.9; }
+}
+
+/* glowing cursor trail (desktop only, tasteful) */
+.trail-dot{
+  position: fixed;
+  width: 5px; height:5px;
+  border-radius:50%;
+  background: var(--rose-soft);
+  box-shadow: 0 0 10px 2px rgba(240,201,209,0.6);
+  pointer-events:none;
+  z-index: 60;
+  opacity: 0.6;
+  transition: opacity 0.6s ease;
+}
+
+/* ============================================================
+   INTRO SCREEN
+   ============================================================ */
+.intro{
+  position: relative;
+  z-index: 10;
+  min-height: 100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding: 24px;
+  transition: opacity 1.4s ease, filter 1.4s ease;
+}
+.intro.leaving{
+  opacity: 0;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.envelope-btn{
+  background:none; border:none; cursor:pointer;
+  padding: 18px;
+  display:flex; align-items:center; justify-content:center;
+  animation: float 4.5s ease-in-out infinite;
+  -webkit-tap-highlight-color: transparent;
+}
+.envelope-btn svg{
+  width: 96px; height:auto;
+  filter: drop-shadow(0 0 18px rgba(184,138,116,0.32));
+  transition: filter 0.4s ease, transform 0.4s ease;
+}
+.envelope-btn:hover svg, .envelope-btn:focus-visible svg{
+  filter: drop-shadow(0 0 28px rgba(184,138,116,0.56));
+  transform: scale(1.04);
+}
+@keyframes float{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-10px); }
+}
+
+.envelope-flap{ transform-origin: 50% 0%; animation: none; }
+.envelope-glow{
+  animation: pulse-glow 3.2s ease-in-out infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{ opacity: 0.25; }
+  50%{ opacity: 0.55; }
+}
+
+.intro-caption{
+  margin-top: 28px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: var(--ink-dim);
+  letter-spacing: 0.01em;
+  animation: caption-in 1.8s ease both;
+  animation-delay: 0.4s;
+}
+@keyframes caption-in{
+  from{ opacity:0; transform: translateY(6px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+
+.intro-hint{
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   LETTER SCREEN
+   ============================================================ */
+.letter-wrap{
+  position: relative;
+  z-index: 10;
+  min-height: 100svh;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding: 48px 20px 40px;
+}
+.letter-wrap.visible{ display:flex; }
+
+.letter-card{
+  position: relative;
+  width: min(640px, 100%);
+  max-height: 82svh;
+  overflow-y: auto;
+  padding: clamp(28px, 5vw, 56px) clamp(24px, 6vw, 52px);
+  background: linear-gradient(180deg, rgba(13,16,24,0.9), rgba(10,12,18,0.96));
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow:
+    0 30px 80px -20px rgba(0,0,0,0.8),
+    0 0 60px -20px rgba(181,110,130,0.12);
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  animation: card-rise 1.6s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes card-rise{
+  to{ opacity:1; transform: translateY(0) scale(1); }
+}
+
+.letter-card::-webkit-scrollbar{ width:6px; }
+.letter-card::-webkit-scrollbar-thumb{ background: var(--burgundy-2); border-radius: 3px; }
+
+.letter-heading{
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+  color: var(--rose-soft);
+  margin: 0 0 22px;
+  text-align:center;
+}
+
+.letter-body{
+  font-family: var(--serif);
+  font-size: clamp(1.05rem, 2.3vw, 1.28rem);
+  line-height: 1.85;
+  color: var(--ink);
+  max-width: 62ch;
+  margin: 0 auto;
+  white-space: pre-wrap;
+}
+
+.type-cursor{
+  display:inline-block;
+  width: 2px;
+  height: 1.05em;
+  background: var(--rose-soft);
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  animation: blink 0.9s steps(1) infinite;
+}
+@keyframes blink{ 50%{ opacity:0; } }
+
+.final-line{
+  font-family: var(--serif);
+  font-style: italic;
+  text-align:center;
+  color: #d8b6bd;
+  margin-top: 34px;
+  font-size: clamp(0.95rem, 2.1vw, 1.1rem);
+  opacity:0;
+  transition: opacity 1.8s ease;
+}
+.final-line.visible{ opacity:1; }
+
+.replay-row,
+.sad-row{
+  display:flex;
+  justify-content:center;
+  margin-top: 30px;
+  opacity:0;
+  transform: translateY(6px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.replay-row.visible,
+.sad-row.visible{ opacity:1; transform: translateY(0); }
+
+.replay-btn,
+.sad-btn{
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 10px 22px;
+  border-radius: 999px;
+  cursor:pointer;
+  transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
+}
+.replay-btn:hover, .replay-btn:focus-visible,
+.sad-btn:hover, .sad-btn:focus-visible{
+  border-color: var(--rose);
+  color: var(--rose-soft);
+  background: rgba(181,110,130,0.08);
+}
+
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(5,6,12,0.72);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 100;
+}
+.modal-overlay.visible{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card{
+  position: relative;
+  width: min(560px, 100%);
+  background: linear-gradient(180deg, rgba(13,16,24,0.98), rgba(10,12,18,0.99));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px 24px 22px;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,0.8), 0 0 60px -20px rgba(181,110,130,0.15);
+  opacity: 0;
+  transform: translateY(18px) scale(0.98);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.modal-overlay.visible .modal-card{
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.modal-close{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-title{
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  color: var(--rose-soft);
+  margin: 0 0 18px;
+  text-align: center;
+}
+
+.modal-text{
+  font-family: var(--serif);
+  font-size: clamp(1.04rem, 2.2vw, 1.28rem);
+  line-height: 1.8;
+  color: var(--ink);
+  white-space: pre-wrap;
+  min-height: 120px;
+}
+
+/* broken heart, small, quiet — sits near the heading */
+.heart-mark{
+  display:block;
+  margin: 0 auto 14px;
+  width: 22px; height:22px;
+  opacity: 0.8;
+  animation: heartbeat 2.6s ease-in-out infinite;
+}
+@keyframes heartbeat{
+  0%,100%{ transform: scale(1); }
+  15%{ transform: scale(1.12); }
+  30%{ transform: scale(1); }
+}
+
+/* ============================================================
+   MUSIC PLAYER
+   ============================================================ */
+.player-wrap{
+  max-width: 62ch;
+  margin: 0 auto 30px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1.4s ease, transform 1.4s ease;
+  pointer-events: none;
+}
+.player-wrap.visible{ opacity:1; transform: translateY(0); pointer-events:auto; }
+
+.player-caption{
+  text-align:center;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  font-style: italic;
+  font-family: var(--serif);
+  margin-bottom: 10px;
+}
+
+.player{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.015);
+}
+
+.play-btn{
+  flex: none;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(217,143,160,0.08);
+  color: var(--rose-soft);
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.play-btn:hover, .play-btn:focus-visible{
+  background: rgba(217,143,160,0.18);
+  border-color: var(--rose);
+}
+.play-btn svg{ width:14px; height:14px; }
+
+.player-mid{ flex:1; min-width:0; }
+.song-title{
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+  margin-bottom: 6px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.progress-row{
+  display:flex; align-items:center; gap:8px;
+}
+.time{ font-size: 0.68rem; color: var(--ink-faint); min-width: 30px; text-align:center; }
+
+.progress-bar{
+  flex:1;
+  height: 3px;
+  background: var(--line);
+  border-radius: 3px;
+  position:relative;
+  cursor:pointer;
+}
+.progress-fill{
+  position:absolute; left:0; top:0; bottom:0;
+  width:0%;
+  background: var(--rose);
+  border-radius: 3px;
+}
+
+.volume-row{ flex:none; display:flex; align-items:center; gap:6px; }
+.volume-row svg{ width:14px; height:14px; color: var(--ink-faint); }
+input[type="range"].vol{
+  -webkit-appearance:none; appearance:none;
+  width: 60px; height:3px;
+  background: var(--line);
+  border-radius:3px;
+  outline:none;
+}
+input[type="range"].vol::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:10px; height:10px; border-radius:50%;
+  background: var(--rose-soft);
+  cursor:pointer;
+}
+input[type="range"].vol::-moz-range-thumb{
+  width:10px; height:10px; border-radius:50%;
+  background: var(--rose-soft); border:none; cursor:pointer;
+}
+
+@media (max-width: 480px){
+  .player{ flex-wrap: wrap; }
+  .volume-row{ order: 3; width:100%; justify-content:flex-end; margin-top:4px; }
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="stars" id="stars"></div>
+  <div class="rain" id="rain"></div>
+  <div class="dust" id="dust"></div>
+  <div class="petals" id="petals"></div>
+
+  <!-- ===================== INTRO SCREEN ===================== -->
+  <section class="intro" id="intro">
+    <button class="envelope-btn" id="envelopeBtn" aria-label="Open the letter">
+      <svg viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse class="envelope-glow" cx="50" cy="35" rx="46" ry="30" fill="url(#glowGrad)"/>
+        <defs>
+          <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#e7b48c" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#e7b48c" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect x="6" y="14" width="88" height="58" rx="3" fill="#141726" stroke="#e7b48c" stroke-opacity="0.5"/>
+        <path d="M6 16 L50 50 L94 16" stroke="#e7b48c" stroke-opacity="0.7" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="envelope-flap" d="M6 15 L50 44 L94 15" stroke="#f0c9d1" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+      </svg>
+    </button>
+    <p class="intro-caption">I have something I need to tell you&hellip;</p>
+    <p class="intro-hint">click to open</p>
+  </section>
+
+  <!-- ===================== LETTER SCREEN ===================== -->
+  <section class="letter-wrap" id="letterWrap">
+    <div class="letter-card" id="letterCard">
+      <svg class="heart-mark" viewBox="0 0 24 24" fill="none">
+        <path d="M12 20s-7-4.6-9.5-9C0.7 7.6 2.6 4 6.3 4c2.1 0 3.6 1.2 4.7 2.9C12.1 5.2 13.6 4 15.7 4c3.7 0 5.6 3.6 3.8 7-1 1.9-3.3 3.8-5.4 5.4" stroke="#d98fa0" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 11l1.6 1.8L14 9" stroke="#d98fa0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+      </svg>
+      <h1 class="letter-heading">My Jaya</h1>
+
+      <div class="player-wrap" id="playerWrap">
+        <p class="player-caption">If you can&hellip; listen to this while reading.</p>
+        <div class="player">
+          <button class="play-btn" id="playBtn" aria-label="Play song">
+            <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="player-mid">
+            <div class="song-title" id="songTitle">Bulong &mdash; December Avenue</div>
+            <div class="progress-row">
+              <span class="time" id="timeCur">0:00</span>
+              <div class="progress-bar" id="progressBar" role="slider" aria-label="Seek" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <span class="time" id="timeDur">0:00</span>
+            </div>
+          </div>
+          <div class="volume-row">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+            <input type="range" class="vol" id="volSlider" min="0" max="1" step="0.01" value="0.7" aria-label="Volume">
+          </div>
+        </div>
+        <audio id="audio" src="bulong.mp3" preload="none"></audio>
+      </div>
+
+      <div class="letter-body" id="letterBody"></div>
+
+      <p class="final-line" id="finalLine">I don&rsquo;t know if these words can fix anything&hellip; but I needed you to know.</p>
+
+      <div class="replay-row" id="replayRow">
+        <button class="replay-btn" id="replayBtn">Read Again</button>
+      </div>
+
+      <div class="sad-row" id="sadRow">
+        <button class="sad-btn" id="sadBtn">Another message</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-overlay" id="sadModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="sadModalTitle">
+    <button class="modal-close" id="closeSadModal" aria-label="Close">&times;</button>
+    <h2 class="modal-title" id="sadModalTitle">the part i can’t forget</h2>
+    <div class="modal-text" id="sadModalText"></div>
+  </div>
+</div>
+
+<div class="vignette"></div>
+<div class="grain"></div>
+
+<script>
+/* ============================================================
+   AMBIENT BACKGROUND: rain, dust, petals, stars
+   ============================================================ */
+(function ambient(){
+  const rain = document.getElementById('rain');
+  for(let i=0;i<38;i++){
+    const d = document.createElement('div');
+    d.className = 'drop';
+    d.style.left = Math.random()*100 + 'vw';
+    d.style.animationDuration = (2.2 + Math.random()*2.4) + 's';
+    d.style.animationDelay = (Math.random()*4) + 's';
+    d.style.height = (40 + Math.random()*50) + 'px';
+    rain.appendChild(d);
+  }
+
+  const dust = document.getElementById('dust');
+  for(let i=0;i<24;i++){
+    const m = document.createElement('div');
+    m.className = 'mote';
+    m.style.left = Math.random()*100 + 'vw';
+    m.style.top = Math.random()*100 + 'vh';
+    m.style.animationDuration = (5 + Math.random()*5) + 's';
+    m.style.animationDelay = (Math.random()*4) + 's';
+    dust.appendChild(m);
+  }
+
+  const petals = document.getElementById('petals');
+  const petalChars = ['\u2740','\u273F'];
+  for(let i=0;i<10;i++){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petalChars[i % 2];
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.animationDuration = (10 + Math.random()*8) + 's';
+    p.style.animationDelay = (Math.random()*10) + 's';
+    p.style.fontSize = (10 + Math.random()*8) + 'px';
+    petals.appendChild(p);
+  }
+
+  const stars = document.getElementById('stars');
+  for(let i=0;i<50;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.top = Math.random()*70 + 'vh';
+    s.style.animationDuration = (2 + Math.random()*3) + 's';
+    s.style.animationDelay = (Math.random()*3) + 's';
+    stars.appendChild(s);
+  }
+})();
+
+/* subtle glowing cursor trail — desktop only, tasteful (throttled) */
+(function cursorTrail(){
+  if(window.matchMedia('(pointer: coarse)').matches) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let last = 0;
+  window.addEventListener('mousemove', (e) => {
+    const now = Date.now();
+    if(now - last < 60) return;
+    last = now;
+    const dot = document.createElement('div');
+    dot.className = 'trail-dot';
+    dot.style.left = e.clientX + 'px';
+    dot.style.top = e.clientY + 'px';
+    document.body.appendChild(dot);
+    requestAnimationFrame(()=>{ dot.style.opacity = '0'; });
+    setTimeout(()=> dot.remove(), 650);
+  });
+})();
+
+/* ============================================================
+   INTRO -> LETTER TRANSITION
+   ============================================================ */
+const intro = document.getElementById('intro');
+const letterWrap = document.getElementById('letterWrap');
+const envelopeBtn = document.getElementById('envelopeBtn');
+
+envelopeBtn.addEventListener('click', openLetter);
+envelopeBtn.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openLetter(); }
+});
+
+function openLetter(){
+  if(intro.classList.contains('leaving')) return;
+  intro.classList.add('leaving');
+
+  const audioEl = document.getElementById('audio');
+  if(audioEl){
+    audioEl.volume = 0.7;
+    audioEl.play().catch(()=>{
+      // autoplay can still be blocked in some browsers; the manual play button remains available.
+    });
+  }
+
+  setTimeout(()=>{
+    intro.style.display = 'none';
+    letterWrap.classList.add('visible');
+    document.getElementById('playerWrap').classList.add('visible');
+    startExperience();
+  }, 1300);
+}
+
+window.addEventListener('load', ()=>{
+  const audioEl = document.getElementById('audio');
+  if(!audioEl) return;
+
+  audioEl.volume = 0.7;
+  audioEl.muted = false;
+
+  const tryAutoplay = () => {
+    audioEl.play().catch(()=>{
+      // Most browsers still block autoplay until click/touch, but this keeps the song ready to play immediately.
+      // The manual button remains available as the fallback.
+    });
+  };
+
+  if(audioEl.readyState >= 1){
+    tryAutoplay();
+  } else {
+    audioEl.addEventListener('canplay', tryAutoplay, { once: true });
+  }
+});
+
+/* ============================================================
+   TYPEWRITER
+   ============================================================ */
+const MESSAGE = `
+Hi my jaya, my baby, my honey, my everything. 
+
+If mababasa mo toh Ginawa ko to para sayo, para makapag-sorry sa mga ginawa kong mali sayo, na dapat di ko ginawa, na dapat di ko pinaramdam sayo. Alam kong nadrain ka at alam kong napagod ka sa akin, kaya sorry ha. Alam kong di sapat yung sorry ko.
+
+At also, sorry rin kung pinili mo ko. Alam kong may times rin na di kita ma-trato ng tama, and dun ako sa part na yun nagsisisi, kasi pangako ko sa sarili ko na itratrato ko yung babaeng papasok ngayon sa buhay ko, kaso di ko gaano magawa-gawa. Sa totoo lang, ang pangit ko maging bf noh? I'm super useless bf na ang dala lang sayo eh sakit ng ulo. Pero yun nga, mahal na mahal kita, tandaan mo yan ha.
+
+Kahit ganto ako, pero right now, di ko alam kung mamahalin mo pa ako, at di ko rin alam kung ano iniisip mo ngayon at ano plano mo ngayon. Pero kung ano man yan, handa akong harapin at handa kong tanggapin yan, kasi yan yung consequence sa ginawa ko sayo. Pero yun, mahal na mahal kita, mamahalin kita lagi. Tandaan mo, lagi lang akong andito sayo ha. At also, sorry talaga, alam kong di sapat to, 
+pero if mapapatawad mo ko asahan mo gagawin ko lahat di na mag kaganto at di ka madrain or mapagod gagawin ko lahat mapasaya ka lang gagawin ko lahat matrato ka lang
+
+ Alam mo rin naman gaano kita mahal at gaano kita want makasama  habang buhay kaso ayun lang nasaktan kita ngayon di ko rin talaga alam kung deserve mo ko eh parang napapaisip me na parang di mo talaga ako deserve kasi on how i treat you pero di pwde i want to become a better person ayoko mapunta ka sa iba.
+ 
+Pero baby mahal kita genuine pag mamahal ko sayo, never ko iniba pag mamahal ko sayo, ganun at ganun parin baby ko, kaya Sorry ha kung nasaktan kita, ang bobo ko noh sinaktan kita, like wtf nagawa ko sayo yung dapat di ko gagawin sayo, tanga tanga bf mo noh,
+Kahit ano mangyare mamahalin kita Kahit iwan mo ko mamahalin kita kasi ikaw last ko eh once Nawala ka tapos na rin ako, want ko nalang maging single forever wala ng magiging Mrs.Delfin pag nawala ka na sa akin `;
+
+const letterBody = document.getElementById('letterBody');
+const letterCard = document.getElementById('letterCard');
+const finalLine = document.getElementById('finalLine');
+const replayRow = document.getElementById('replayRow');
+const replayBtn = document.getElementById('replayBtn');
+const sadRow = document.getElementById('sadRow');
+const sadBtn = document.getElementById('sadBtn');
+const playerWrap = document.getElementById('playerWrap');
+const sadModal = document.getElementById('sadModal');
+const sadModalText = document.getElementById('sadModalText');
+const closeSadModal = document.getElementById('closeSadModal');
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function pauseFor(ch){
+  if(ch === '.' || ch === '\u2026') return 520;
+  if(ch === ',' ) return 240;
+  if(ch === '\n') return 580;
+  if(ch === '!' || ch === '?') return 460;
+  return 40 + Math.random()*25;
+}
+
+let typingToken = 0;
+
+function typeMessage(){
+  const myToken = ++typingToken;
+  letterBody.textContent = '';
+  finalLine.classList.remove('visible');
+  replayRow.classList.remove('visible');
+
+  const cursor = document.createElement('span');
+  cursor.className = 'type-cursor';
+
+  if(reducedMotion){
+    letterBody.textContent = MESSAGE;
+    afterTypingDone(myToken);
+    return;
+  }
+
+  let i = 0;
+  let musicStarted = false;
+
+  function step(){
+    if(myToken !== typingToken) return; // superseded by a new replay
+    if(i === 0){
+      letterBody.appendChild(document.createTextNode(''));
+      letterBody.appendChild(cursor);
+    }
+    if(i >= MESSAGE.length){
+      cursor.remove();
+      afterTypingDone(myToken);
+      return;
+    }
+    const ch = MESSAGE[i];
+    cursor.insertAdjacentText('beforebegin', ch);
+    i++;
+
+    // fade in the music player shortly after typing begins
+    if(!musicStarted && i > 8){
+      musicStarted = true;
+      playerWrap.classList.add('visible');
+    }
+
+    // keep the card scrolled to the growing text
+    letterCard.scrollTop = letterCard.scrollHeight;
+
+    setTimeout(step, pauseFor(ch));
+  }
+  step();
+}
+
+function afterTypingDone(token){
+  if(token !== typingToken) return;
+  setTimeout(()=>{
+    finalLine.classList.add('visible');
+    letterCard.scrollTop = letterCard.scrollHeight;
+  }, 500);
+  setTimeout(()=>{
+    replayRow.classList.add('visible');
+    sadRow.classList.add('visible');
+  }, 1700);
+}
+
+replayBtn.addEventListener('click', ()=>{
+  typeMessage();
+  sadModal.classList.remove('visible');
+  sadModal.setAttribute('aria-hidden', 'true');
+  sadModalText.textContent = '';
+});
+
+const SAD_MESSAGE = `
+My Dream is ikaw want ko maging wife ko in the future, bumuo ng family kasama ka, mag travel around the world, 
+and also pumunta sa Paris na dream country mo and also magkaroon ng Bahay, and lastly is mabuo natin si baby kaia, pero baka maging panaginip nalng toh, pero ayos lang if di man toh  matuloy ikaw na magtuloy ha, masakit man sa akin kung di ako magiging hubby mo pero happy ako kasi matutupad yung pangarap natin kaso sa iba nga lang kung di tayo nag work kasi ako possible mawala sa mundong ito eh, marami ako sakit di natin alam kung kelan ako kukunin, basta ha tuparin mo yung plano natin if di ako maging hubby mo kahit masakit sa akin yun lang naman want ko mangyare eh pero kung ako yung magiging hubby mo masaya ako baby ko kasi ako makakasama mo makakagawa ng lahat ng yun, Pangarap ko yun eh
+`;
+
+let sadTypingToken = 0;
+
+function typeSadMessage(){
+  const modalText = sadModalText;
+  const myToken = ++sadTypingToken;
+  modalText.textContent = '';
+
+  const cursor = document.createElement('span');
+  cursor.className = 'type-cursor';
+
+  let i = 0;
+
+  function step(){
+    if(myToken !== sadTypingToken) return;
+    if(i >= SAD_MESSAGE.length){
+      cursor.remove();
+      return;
+    }
+
+    const ch = SAD_MESSAGE[i];
+    cursor.insertAdjacentText('beforebegin', ch);
+    i++;
+    modalText.scrollTop = modalText.scrollHeight;
+    setTimeout(step, ch === '\n' ? 180 : 36 + Math.random()*18);
+  }
+
+  modalText.appendChild(cursor);
+  step();
+}
+
+sadBtn.addEventListener('click', ()=>{
+  sadModal.classList.add('visible');
+  sadModal.setAttribute('aria-hidden', 'false');
+  typeSadMessage();
+});
+
+closeSadModal.addEventListener('click', ()=>{
+  sadModal.classList.remove('visible');
+  sadModal.setAttribute('aria-hidden', 'true');
+  sadModalText.textContent = '';
+  sadTypingToken++;
+});
+
+sadModal.addEventListener('click', (e)=>{
+  if(e.target === sadModal){
+    sadModal.classList.remove('visible');
+    sadModal.setAttribute('aria-hidden', 'true');
+    sadModalText.textContent = '';
+    sadTypingToken++;
+  }
+});
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && sadModal.classList.contains('visible')){
+    sadModal.classList.remove('visible');
+    sadModal.setAttribute('aria-hidden', 'true');
+    sadModalText.textContent = '';
+    sadTypingToken++;
+  }
+});
+
+let experienceStarted = false;
+function startExperience(){
+  if(experienceStarted) return;
+  experienceStarted = true;
+  typeMessage();
+}
+
+/* ============================================================
+   MUSIC PLAYER (custom controls around the <audio> element)
+   ============================================================ */
+(function player(){
+  const audio = document.getElementById('audio');
+  const playBtn = document.getElementById('playBtn');
+  const playIcon = document.getElementById('playIcon');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const timeCur = document.getElementById('timeCur');
+  const timeDur = document.getElementById('timeDur');
+  const volSlider = document.getElementById('volSlider');
+  const songTitle = document.getElementById('songTitle');
+
+  const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
+  const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+
+  audio.volume = 0.7;
+
+  function fmt(s){
+    if(!isFinite(s)) return '0:00';
+    const m = Math.floor(s/60);
+    const sec = Math.floor(s%60).toString().padStart(2,'0');
+    return m + ':' + sec;
+  }
+
+  playBtn.addEventListener('click', async ()=>{
+    try{
+      if(audio.paused){
+        await audio.play();
+      } else {
+        audio.pause();
+      }
+    }catch(err){
+      songTitle.textContent = 'add song.mp3 next to this file to enable playback';
+    }
+  });
+
+  audio.addEventListener('play', ()=>{ playIcon.innerHTML = ICON_PAUSE; playBtn.setAttribute('aria-label','Pause song'); });
+  audio.addEventListener('pause', ()=>{ playIcon.innerHTML = ICON_PLAY; playBtn.setAttribute('aria-label','Play song'); });
+  audio.addEventListener('loadedmetadata', ()=>{
+    timeDur.textContent = fmt(audio.duration);
+    songTitle.textContent = 'song.mp3';
+  });
+  audio.addEventListener('timeupdate', ()=>{
+    timeCur.textContent = fmt(audio.currentTime);
+    const pct = audio.duration ? (audio.currentTime/audio.duration*100) : 0;
+    progressFill.style.width = pct + '%';
+    progressBar.setAttribute('aria-valuenow', Math.round(pct));
+  });
+  audio.addEventListener('error', ()=>{
+    songTitle.textContent = 'add song.mp3 next to this file to enable playback';
+  });
+
+  function seek(clientX){
+    const rect = progressBar.getBoundingClientRect();
+    const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    if(audio.duration) audio.currentTime = pct * audio.duration;
+  }
+  progressBar.addEventListener('click', (e)=> seek(e.clientX));
+  progressBar.addEventListener('keydown', (e)=>{
+    if(!audio.duration) return;
+    if(e.key === 'ArrowRight'){ audio.currentTime = Math.min(audio.duration, audio.currentTime+5); }
+    if(e.key === 'ArrowLeft'){ audio.currentTime = Math.max(0, audio.currentTime-5); }
+  });
+
+  volSlider.addEventListener('input', ()=>{ audio.volume = parseFloat(volSlider.value); });
+})();
+</script>
+
+</body>
+</html>
