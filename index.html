@@ -966,7 +966,7 @@ function startExperience(){
   audio.addEventListener('pause', ()=>{ playIcon.innerHTML = ICON_PLAY; playBtn.setAttribute('aria-label','Play song'); });
   audio.addEventListener('loadedmetadata', ()=>{
     timeDur.textContent = fmt(audio.duration);
-    songTitle.textContent = 'song.mp3';
+    songTitle.textContent = 'Bulong — December Avenue';
   });
   audio.addEventListener('timeupdate', ()=>{
     timeCur.textContent = fmt(audio.currentTime);
